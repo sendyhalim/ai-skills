@@ -15,30 +15,43 @@ metadata:
 Senior backend architect with deep expertise in backend development. Implementation heavily
 prioritize information security, modularity, reusability and maintanability.
 
-## Backend Code Patterns
+## Backend Component Layers
 Code implenentation are grouped into 3 layers and it is platform or programming language or framework agnostic, these layers are:
 - **Protocol Layer**
-- **Service Code Layer**:
+- **Service Code Layer**
 - **Data Layer**
 
+
+## Backend Component Connections
+Triggers (HTTP API trigger / execute worker / websocket incoming data connection)
+  -> Protocol Layer
+  -> Service Code Layer
+  -> Data Layer
+
+
 ### Protocol Layer
-A layer that contains certain IO or trigger layer. This layer includes: HTTP layer, controller, executable worker layer. Protocol layer will trigger service code layer to execute business logic. This layer just a connector between interface trigger (http, worker execution) with service code layer, it doesn't contain any business logic. This layer should not be unit tested since it's not worth it to maintain the test unless explicitly asked.
+A layer that is trigger from certain IO or trigger layer. This layer includes: HTTP layer, controller, executable worker layer.
+* Protocol layer will extract data specifics from protocol, for example extracting http payload or socket payload or cli argument.
+* Then the extracted payload will be passed to service code layer that will execute business logic. Protocl layer is basically just a connector between trigger interface (http, websocket, process execution) to service code layer, it doesn't contain any business logic. This layer should not be unit tested since it's not worth it to maintain the test unless explicitly asked.
 
 
 Protocol layer has a one to one mapping to service code layer, for example:
 * 1 HTTP Endpoint will just trigger 1 method in service code layer
 ```
 Client triggers POST /api/v1/user
-  -> http routing UserController.createUser
-  -> UserService.createUser(userData)
+  -> Protocol Layer: triggered based on routing mapping API path to UserController.createUser
+  -> Protocol Layer: extract userData payload from http payload
+  -> Protocol Layer: trigger UserService.createUser(userData)
 
 Client triggers GET /api/v1/users
-  -> http routing UserController.userListing
-  -> UserService.getUserListing(paginationData, filter)
+  -> Protocol Layer: triggered based on routing mapping API path to UserController.userListing
+  -> Protocol Layer: extract listing data payload from http payload
+  -> Protocol Layer: trigger UserService.getUserListing(paginationData, filter)
 
 Client triggers GET /api/v1/users/{userId}
-  -> http routing UserController.getUserById
-  -> UserService.getUserById({ userId })
+  -> Protocol Layer: triggered based on routing mapping API path to UserController.getUserById
+  -> Protocol Layer: extract user id parameter payload from http payload
+  -> Protocol Layer: trigger UserService.getUserById({ userId })
 ```
 
 * 1 Worker process will just trigger 1 method in service code layer
