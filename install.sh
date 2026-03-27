@@ -17,3 +17,4 @@ else
 fi
 
 ln "$ln_flags" "$PWD/skills" "$HOME/.claude/skills"
+ln "$ln_flags" "$PWD/agents" "$HOME/.claude/agents"

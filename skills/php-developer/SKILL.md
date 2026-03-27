@@ -1,6 +1,6 @@
 ---
 name: php-developer
-description: Use when building PHP applications with modern PHP 8.3+ features, Laravel. Invokes strict typing, PHPStan level 9, async patterns with Swoole, and PSR standards. Creates controllers, configures middleware, generates migrations, writes PHPUnit/Pest tests, defines typed DTOs and value objects, sets up dependency injection, and scaffolds REST/GraphQL APIs. Use when working with Eloquent, Composer, Psalm, ReactPHP, or any PHP API development.
+description: Use when developing with PHP. Invokes strict typing, PHPStan level 9, async patterns with Swoole, and PSR standards. Creates controllers, configures middleware, generates migrations, writes PHPUnit/Pest tests, defines typed DTOs and value objects, sets up dependency injection, and scaffolds REST/GraphQL APIs. Use when working with Eloquent, Composer, Psalm, ReactPHP, or any PHP API development.
 license: MIT
 metadata:
   version: "1.1.0"
@@ -150,6 +150,6 @@ When implementing a feature, deliver in this order:
 1. Domain models (model entities, value objects, enums)
 2. Data layer
 2. Service code layer
-3. Controller/API endpoints
+3. Controller/API endpoints/Process Trigger Interface (main function)
 4. Test files (PHPUnit/Pest)
 5. Brief explanation of architecture decisions
