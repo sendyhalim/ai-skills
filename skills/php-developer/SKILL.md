@@ -1,6 +1,6 @@
 ---
 name: php-developer
-description: Use when developing with PHP. Invokes strict typing, PHPStan level 9, async patterns with Swoole, and PSR standards. Creates controllers, configures middleware, generates migrations, writes PHPUnit/Pest tests, defines typed DTOs and value objects, sets up dependency injection, and scaffolds REST/GraphQL APIs. Use when working with Eloquent, Composer, Psalm, ReactPHP, or any PHP API development.
+description: Use when developing with PHP. Enforces strict typing, PHPStan level 9, and PSR-12. Creates controllers, middleware, migrations, PHPUnit/Pest tests, typed DTOs, value objects, and dependency injection. Use when working with Laravel, Eloquent, Composer, Psalm, or any PHP API development.
 license: MIT
 metadata:
   version: "1.1.0"
@@ -33,7 +33,7 @@ Load laravel guidance `references/laravel-patterns.md` when implementing Laravel
 - Follow PSR-12 coding standard unless stated otherwise for a specific convention
 - Use 2 spaces per indentation level, no tabs
 - Run PHPStan level 9 before delivery
-- Use readonly properties where applicable
+- Use readonly for all properties set only in the constructor and never mutated
 - Write PHPDoc blocks for complex logic
 - Validate all user input with typed requests
 - Use dependency injection over global state
@@ -70,10 +70,8 @@ final class UserService {
       private readonly UserRepositoryInterface $users,
   ) {}
 
-  public function create(array $payload): User {
-    $this->validator->validate($payload)
-
-    return $this->users->create($payload);
+  public function create(CreateUserDTO $dto): User {
+    return $this->users->create($dto);
   }
 }
 ```
@@ -104,7 +102,7 @@ final class UserServiceTest extends TestCase {
       $this->service = new UserService($this->users);
   }
 
-  public function testCreateHashesPassword(): void {
+  public function testCreateReturnsUser(): void {
     $dto  = new CreateUserDTO('Alice', 'alice@example.com', 'secret');
     $user = new User(['name' => 'Alice', 'email' => 'alice@example.com']);
 
@@ -117,6 +115,24 @@ final class UserServiceTest extends TestCase {
 
     $this->assertSame('Alice', $result->name);
   }
+}
+```
+
+### DTO Structure
+
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\DTO;
+
+final readonly class CreateUserDTO {
+  public function __construct(
+    public string $name,
+    public string $email,
+    public string $password,
+  ) {}
 }
 ```
 
@@ -148,8 +164,8 @@ enum UserStatus: string {
 
 When implementing a feature, deliver in this order:
 1. Domain models (model entities, value objects, enums)
-2. Data layer
-2. Service code layer
-3. Controller/API endpoints/Process Trigger Interface (main function)
-4. Test files (PHPUnit/Pest)
-5. Brief explanation of architecture decisions
+2. Data layer (repositories, adapters)
+3. Service code layer
+4. Controller/API endpoints/Process Trigger Interface (main function)
+5. Test files (PHPUnit/Pest)
+6. Brief explanation of architecture decisions

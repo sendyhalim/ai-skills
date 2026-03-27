@@ -1,6 +1,6 @@
 ---
 name: general-backend-architect
-description: Use when building or developing feature for backend development
+description: Use when designing or implementing backend features across any language or framework. Defines the three-layer architecture (Protocol, Service, Data) and bottom-up delivery order.
 license: MIT
 metadata:
   domain: language
@@ -8,18 +8,19 @@ metadata:
   role: specialist
   scope: implementation
   output-format: code
+  related-skills: php-developer
 ---
 
 # General Backend Architect
 
 
 ## Overview
-Backend development baseline skill to understand and develop backend features.
-Implementation heavily prioritize information security, modularity, testability, reusability and maintanability.
+Backend development baseline skill for designing and implementing backend features.
+All implementations must satisfy these non-negotiable constraints: information security, modularity, testability, reusability, and maintainability.
 
 ## Core Pattern
 ### Backend Component Layers
-Code implenentation are grouped into 3 layers and it is platform or programming language or framework agnostic, these layers are:
+Code implementation are grouped into 3 layers and it is platform or programming language or framework agnostic, these layers are:
 - **Protocol Layer**: Will trigger business logic in the service code layer.
 - **Service Code Layer**: Will execute business logic and might depends on data layer.
 - **Data Layer**: Implementation to interact with storage such as database, filesystem, cache (redis or memory cache).
@@ -28,7 +29,7 @@ Code implenentation are grouped into 3 layers and it is platform or programming 
 #### Protocol Layer
 A layer that is trigger from certain IO or trigger layer. This layer includes: HTTP layer, controller, executable worker layer.
 * Protocol layer will extract data specifics from protocol, for example extracting http payload or socket payload or cli argument.
-* Then the extracted payload will be passed to service code layer that will execute business logic. Protocl layer is basically just a connector between trigger interface (http, websocket, process execution) to service code layer, it doesn't contain any business logic. This layer should not be unit tested since it's not worth it to maintain the test unless explicitly asked.
+* Then the extracted payload will be passed to service code layer that will execute business logic. Protocol layer is basically just a connector between trigger interface (http, websocket, process execution) to service code layer, it doesn't contain any business logic. This layer should not be unit tested since it's not worth it to maintain the test unless explicitly asked.
 
 
 Protocol layer has a one to one mapping to service code layer, for example:
@@ -63,7 +64,9 @@ Cronjob triggers `./run-worker process-reporting-data`
 
 #### Service Code Layer
 This layer contains business logic, it doesn't contain anything specific from protocol layer.
-This layer receives plain data as input from the upper layer, then validates the data using a validator defined in each project before processing the data into the business logic. This layer might require multiple data layers depending on the business logic.
+This layer receives plain data as input from the upper layer, then validates it at the top of each service method using the project's validator. If no validator exists, use typed parameters and assert invariants explicitly. This layer might require multiple data layers depending on the business logic.
+
+Errors are handled here as typed domain exceptions. The Protocol layer is responsible for catching them and mapping to protocol-specific responses (e.g. HTTP 400/500).
 
 Unit testing is mandatory for this layer.
 
@@ -75,8 +78,9 @@ This layer should not be unit tested since it's not worth it to maintain the tes
 
 ### Execution Steps
 When implementing a backend feature, deliver in this bottom-up order:
-1. Data layer: Domain models (entities, value objects, enums)
-2. Service code layer: service classes
-3. Controller/API endpoints/Worker main trigger point
-4. Test files
-5. Brief explanation of architecture decisions
+1. Domain models (entities, value objects, enums)
+2. Data layer (repositories, adapters)
+3. Service code layer: service classes
+4. Controller/API endpoints/Worker main trigger point
+5. Test files
+6. Brief explanation of architecture decisions
