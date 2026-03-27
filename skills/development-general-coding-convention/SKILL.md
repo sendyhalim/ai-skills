@@ -129,7 +129,7 @@ Set<String> names
 ```
 
 
-Naming convention for `Map` or `Dictionary` type
+### Naming convention for `Map` or `Dictionary` type
 Use `{value}By{Key}` format for `Map` / `Dictionary` type
 
 #### Bad Example
