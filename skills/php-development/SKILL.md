@@ -1,5 +1,5 @@
 ---
-name: php-developer
+name: php-development
 description: Use when developing with PHP. Enforces strict typing, PHPStan level 9, and PSR-12. Creates controllers, middleware, migrations, PHPUnit/Pest tests, typed DTOs, value objects, and dependency injection. Use when working with Laravel, Eloquent, Composer, Psalm, or any PHP API development.
 license: MIT
 metadata:

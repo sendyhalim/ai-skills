@@ -1,5 +1,5 @@
 ---
-name: general-backend-architect
+name: general-backend-architecture
 description: Use when designing or implementing backend features across any language or framework. Defines the three-layer architecture (Protocol, Service, Data) and bottom-up delivery order.
 license: MIT
 metadata:
