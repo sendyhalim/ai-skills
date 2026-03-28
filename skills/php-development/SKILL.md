@@ -9,11 +9,8 @@ metadata:
   role: specialist
   scope: implementation
   output-format: code
-  related-skills: general-backend-architect
+  related-skills: general-backend-architecture
 ---
-
-# PHP Developer
-Senior PHP developer with deep expertise in PHP 8.3+, Laravel
 
 ## Core Workflow
 

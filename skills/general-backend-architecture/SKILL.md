@@ -58,7 +58,6 @@ Client runs `./run-worker process-user-registration`
 
 Cronjob triggers `./run-worker process-reporting-data`
   -> Inside run-worker -> routing process param process-reporting-data -> ReportingService.processDailyReporting()
-
 ```
 
 
@@ -84,3 +83,7 @@ When implementing a backend feature, deliver in this bottom-up order:
 4. Controller/API endpoints/Worker main trigger point
 5. Test files
 6. Brief explanation of architecture decisions
+
+### MUST NOT DO
+*
+
