@@ -1,39 +1,122 @@
 ---
 name: development-general-coding-convention
-description: Use for all development related work, including backend, frontend, database, and devops. Enforces consistent naming conventions across the codebase for improved readability and maintainability.
+description: "Use for all development work including backend, frontend, database, and devops. Enforces naming conventions (variables, functions, classes, files, booleans, iterables, maps), whitespace rules, guard clauses, builder patterns, and comment style. Apply this skill whenever writing or reviewing code in any language. Language-specific skills (java-development, php-development, etc.) override overlapping rules from this skill."
 ---
 
-# Overview
-Development general coding convention, the convention written here is used as baseline for any kind
-of software development task, all the conventions can be overridden by specific convention or instruction in the AI skill for specific language, framework, or library.
+# Development General Coding Convention
 
-For example conventions defined in `java-development` skill will override any **overlapping** convention written in the `development-general-coding-convention` skill.
+Baseline coding conventions for any software development task. These conventions are language and framework agnostic — apply them everywhere unless a language-specific skill (e.g., `java-development`, `php-development`) provides a conflicting rule then prioritize rule in the language-specific skill for that specific convention.
 
-Code examples and snippets syntax in `development-general-coding-convention` are in Java but the principles are aplicable for all programming languages.
+## Precedence Rule
 
-### Whitespaces
-For line with more than 100 characters: long statements or function/method calls with long multiple parameters must be splitted by newlines. When splitting by new lines, make sure closing brace or bracket is on a new line and the indentation of the closing brace matches the starting statement indentation level.
+When a language-specific skill defines a convention that conflicts with one here, the language-specific skill wins for that specific convention. All non-overlapping conventions from this skill still apply. For example, if `java-development` specifies 2-space indentation, that overrides any indentation rule here — but naming conventions from this skill still apply unless `java-development` also defines naming rules.
 
-Goal: To reduce horizontal scrolling and improve readability.
+Code examples below use Java-like syntax for illustration, but the principles apply to all languages.
 
-#### Bad Example
+---
+
+## Naming Conventions
+
+Good naming eliminates the need for comments and prevents bugs caused by misunderstanding what a variable holds or what a function does.
+
+### Classes and Types
+Use PascalCase. Name should be a noun or noun phrase that describes what the thing *is*.
+
 ```
-// BAD: Too long for a single line
+// Good
+UserService, PaymentGateway, OrderStatus, CreateUserRequest
+
+// Bad
+Manage, DoStuff, Helper (too vague — helper for what?)
+```
+
+### Functions and Methods
+Use camelCase (or snake_case depending on language convention). Name should start with a verb that describes what the function *does*.
+
+```
+// Good
+calculateDiscount(), findUserByEmail(), processPayment(), validateInput()
+
+// Bad
+discount(), user(), data() — these read like nouns, not actions
+```
+
+### Boolean Variables and Methods
+Prefix with `is`, `has`, `should`, `can`, or `was` so the variable reads as a true/false question. This eliminates ambiguity about what the value represents.
+
+```
+// Good
+isActive, hasPermission, shouldRetry, canEdit, wasProcessed
+
+// Bad
+active    // Is this a boolean? A status string? An active record?
+retry     // Is this a count? A boolean? A function?
+```
+
+### Constants
+Use UPPER_SNAKE_CASE to visually distinguish constants from mutable variables.
+
+```
+// Good
+MAX_RETRY_COUNT, DEFAULT_TIMEOUT_MS, API_BASE_URL
+
+// Bad
+maxRetryCount  // Looks like a regular variable, easy to accidentally reassign
+```
+
+### Iterable Collections (Array, List, Set)
+Use plural nouns. The plural form signals "this holds multiple items" without needing to check the type.
+
+```
+// Good
+Array<Post> posts
+List<User> users
+Set<String> names
+
+// Bad
+Array<Post> post     // Reads like a single item
+List<User> userList  // The type already says it's a list — redundant suffix
+```
+
+### Maps and Dictionaries
+Use `{value}By{Key}` format. This makes the lookup semantics obvious: "if I supply X as the key, I get Y."
+
+```
+// Good
+Map<String, User> userByEmail          // Supply email, get a user
+Map<String, List<User>> usersByCity    // Supply city, get a list of users
+
+// Bad
+Map<String, User> users               // What's the key? ID? Email? Name?
+Map<String, List<User>> userMap       // "Map" suffix adds nothing — the type says it
+```
+
+### Files and Directories
+Follow the dominant convention of the project. When starting fresh:
+- **Class files**: Match the class name and casing (e.g., `UserService.java`, `user_service.py`)
+- **Directories/packages**: Use lowercase with hyphens or underscores depending on language norm (`user-management/` for JS/TS, `user_management/` for Python, `usermanagement/` for Java packages)
+- **Config and non-code files**: Use lowercase with hyphens (`docker-compose.yml`, `api-spec.json`)
+
+---
+
+## Whitespace and Line Length
+
+Lines longer than 100 characters are hard to read and create horizontal scrolling in code review tools. When a line exceeds 100 characters, split it across multiple lines with the closing brace or bracket on its own line, aligned with the starting statement's indentation level.
+
+**Bad:**
+```
+// Too long for a single line
 ResultFromExternalLibrary result = this.someExternalLibrary.doSomethingWithParameter(parameter1, parameter2, parameter3);
 
-// BAD: opening parenthesis does not match the current
-// statement starting indentation level.
+// Closing parenthesis doesn't match starting indentation level — looks misaligned
 ResultFromExternalLibrary result = this.someExternalLibrary.doSomethingWithParameter(
   parameter1,
   parameter2,
   parameter3);
 ```
 
-#### Good Example
+**Good:**
 ```
-// GOOD
-// * Line containing method call with many arguments is splitted into multiple lines
-// * Closing parenthesis indentation level matches the starting statement indentation level.
 ResultFromExternalLibrary result = this.someExternalLibrary.doSomethingWithParameter(
   parameter1,
   parameter2,
@@ -41,32 +124,27 @@ ResultFromExternalLibrary result = this.someExternalLibrary.doSomethingWithParam
 );
 ```
 
-### Builder pattern
-Create DTO pattern for method or function with more than >= 2 parameters.
-* For Java you must use lombok plugin to automatically create builder for you,
-* For Javascript can use plain javascript object
-* for other language without lombok equivalent can just use `new` instance syntax.
+---
 
-#### Bad Example
-```j
-// :')
+## Builder / DTO Pattern for Multi-Parameter Functions
+
+When a function takes 2 or more parameters, use a named DTO or builder pattern instead of positional arguments. Positional arguments are a common source of bugs — the compiler won't catch it if you swap two parameters of the same type, and the call site doesn't communicate what each value means.
+
+**Bad:**
+```
+// What do these numbers mean? Which is which?
 AnnuityCalculator.calculate(100000, 0.1, 3);
 
-
-// It's arguable that 2-parameter method to use Builder pattern,
-// but consider this method, which one is the discount? first one or 2nd one?
-// by convention it should be 120000 and amount should be named purchaseAmount,
-// but it doesn't prevent engineer to do this kind of mistake.
-DiscountCalculator.subtractDiscount(amount, 120000)
+// Which one is the discount — the first or second argument?
+// A wrong guess causes a silent bug.
+DiscountCalculator.subtractDiscount(amount, 120000);
 ```
 
-#### Good Example
+**Good:**
 ```
-// Yes it's longer, but it's easier to understand what are the parameters and it fixes
-// the possibility of bug because of wrong parameter ordering
-// e.g. AnnuityCalculator.calculate(3, 0.1, 100000);
+// Every parameter is named — impossible to mix up, easy to read
 AnnuityCalculator.calculate(
-  FooBarInput
+  AnnuityInput
     .builder()
     .principal(100000)
     .interestRate(0.1)
@@ -75,88 +153,70 @@ AnnuityCalculator.calculate(
 );
 ```
 
-### Guard Pattern
-Only a few language like swift has `guard` statement for control flow, in other language you could emulate the same with `if` statement language at the start of the flow to check whether we need to do early return or preventing something to happen. The goal is to reduce nested if statements that makes it harder to follow the logic.
+How to implement varies by language:
+- **Java**: Use Lombok `@Builder` or records for immutable DTOs
+- **JavaScript/TypeScript**: Use a plain object `{ principal: 100000, interestRate: 0.1, tenure: 3 }`
+- **PHP**: Use a readonly DTO class
+- **Python**: Use a dataclass or TypedDict
+- **Other languages**: Use the idiomatic equivalent — a struct, named tuple, or constructor with named parameters
 
+---
 
-#### Bad Example
+## Guard Clauses (Early Return)
+
+Use guard clauses to handle invalid or edge-case conditions at the top of a function, then proceed with the main logic un-nested. Deeply nested if/else blocks force the reader to mentally track multiple branches to understand what the function does. Guard clauses flatten the logic so the happy path reads top-to-bottom.
+
+**Bad:**
 ```
-// BAD: The business logic is inside 2 levels of if statement
+// Business logic buried inside 2 levels of nesting
 if (data is valid) {
   if (discount != 0) {
-      // Business Logic here
-      return bla bla;
+    // Business logic here
+    return result;
   } else {
-      // Another business logic logic
-      return bla bla;
+    // Other logic
+    return otherResult;
   }
 } else {
   // Throw error
 }
 ```
 
-#### Good Example
-
+**Good:**
 ```
-// GOOD: The business logic is not in nested if statement, it's easier to follow the flow of the logic
-if (!valid) { // Guard here
-  // Throw error
+// Guard: reject invalid input immediately
+if (!valid) {
+  throw error;
 }
 
+// Guard: handle special case
 if (discount != 0) {
-  // Logic here
-  return bla bla;
+  return discountedResult;
 }
 
-// Main logic here
-return bla bla;
+// Main logic — no nesting, reads clearly
+return standardResult;
 ```
 
-### Naming convention for iterable `Array`, `List`, `Set`
-Use plural noun
+---
 
-#### Bad Example
-```
-Array<Post> post
-List<User> user
-```
+## Comments
 
-#### Good Example
-```
-Array<Post> posts
-List<User> user
-Set<String> names
-```
+Comments should explain *why*, not *what*. If you need a comment to explain what the code does, consider renaming variables or extracting a well-named function instead.
 
+When writing comments:
+- Start with a capital letter
+- Add one space between the comment marker and the text
 
-### Naming convention for `Map` or `Dictionary` type
-Use `{value}By{Key}` format for `Map` / `Dictionary` type
-
-#### Bad Example
-```
-Map<String, User> users
-Map<String, List<User>> users
-```
-
-#### Good Example
-```
-Map<String, User> userByEmail // If we supply email as key, we will get a user
-Map<String, List<User>> usersByCity // If we supply city as key, we will get a list of users
-
-```
-
-### Comments
-* Always use capital letter to start a new sentence
-* Add one space between comment marker and the comment itself
-
-#### Bad Example
+**Bad:**
 ```
 //This is a comment
 // this is a comment
+// increment i by 1   (describes what the code does — the code already says this)
 ```
 
-#### Good Example
+**Good:**
 ```
-// This is a comment.
+// Retry limit is 3 because the payment gateway has intermittent 502s during peak hours.
 // Another comment.
 ```
