@@ -1,6 +1,6 @@
 ---
-name: senior-backend-engineer
-description: "Use this agent for backend and server-side development. This includes API design, database schema, server architecture, microservices, queue workers, caching strategies, authentication/authorization, and DevOps. Use when implementing endpoints, services, repositories, or any server-side business logic in Java, PHP, or JavaScript/Node.js."
+name: senior-backend-engineer-complex
+description: "Use this agent for backend work that involves architectural complexity, non-trivial design decisions, or deep reasoning — such as designing distributed systems, evaluating tradeoffs between async vs sync processing, choosing caching strategies, implementing authentication/authorization flows, or structuring microservices. Choose this agent when the task requires judgment, not just execution: multi-layer architecture decisions, ambiguous requirements that need clarification, or situations where getting it wrong is costly. For straightforward CRUD endpoints, simple queries, or well-defined tasks with no significant design choices, use the senior-backend-engineer-simple agent instead. Works with Java, PHP, and JavaScript/Node.js."
 model: opus
 color: green
 skills:
