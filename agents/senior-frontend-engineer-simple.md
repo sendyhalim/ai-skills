@@ -1,7 +1,7 @@
 ---
-name: senior-frontend-engineer
-description: "Use this agent for frontend and client-side development. This includes UI components, pages, layouts, state management, form handling, routing, API integration, accessibility, and responsive design. Use when building or modifying React components, pages, hooks, Redux slices, or any client-side logic. Works with React, Inertia.js, Redux, and standalone SPAs."
-model: opus
+name: senior-frontend-engineer-simple
+description: "Use this agent for frontend tasks that are well-defined and straightforward to implement — no significant architectural decisions required. Good fits: adding a UI component from an established pattern, fixing a layout or styling bug, adding a form field, wiring a simple API call to an existing hook, updating copy or translations, or scaffolding boilerplate from existing examples. If the task involves evaluating state management strategies, designing a component hierarchy from scratch, choosing between rendering approaches, or navigating ambiguous UI requirements, use the senior-frontend-engineer-complex agent instead. Works with React, Inertia.js, Redux, and standalone SPAs."
+model: sonnet
 color: blue
 skills:
   - explain-code
