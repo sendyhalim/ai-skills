@@ -1,0 +1,11 @@
+# Remote config synced from the platform dashboard.
+# Keys are read at boot via loadRemoteConfig().
+
+feature_flags:
+  new_dashboard_ui: true
+  analytics_v3: false
+
+limits:
+  max_upload_size_bytes: 10485760       # 10 MB — enforced in uploader
+  max_upload_size_override: 52428800    # 50 MB — legacy override, previously used for enterprise tenants
+  max_request_timeout_ms: 30000

@@ -1,0 +1,39 @@
+{
+  "skill_name": "cleanup-abtest-remoteconfig",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "We shipped the new checkout flow months ago and it's been at 100% rollout. Clean up the feature flag `new_checkout_flow` in this codebase — keep the new flow, remove the legacy one. The codebase is under `evals/files/eval-1-boolean-gate/`. Make sure the unit tests still pass (you don't need to install node_modules, just update the test file so it reflects the post-cleanup behavior and explain what the test run would show).",
+      "expected_output": "A plan file documenting the audit, edits to checkout.js that inline the new-flow branches, removal of the flag from flags.js, and an updated test file that no longer stubs the flag and still asserts the new-flow behavior (free above $50, v2 template, promo field shown).",
+      "files": [
+        "evals/files/eval-1-boolean-gate/src/flags.js",
+        "evals/files/eval-1-boolean-gate/src/checkout.js",
+        "evals/files/eval-1-boolean-gate/test/checkout.test.js",
+        "evals/files/eval-1-boolean-gate/package.json"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Please retire the `homepage_banner_experiment` A/B test. The codebase is at `evals/files/eval-2-multi-variant/`. Audit the variants first and ask me which one to keep before making changes. Tests must still cover the surviving behavior.",
+      "expected_output": "An audit report listing all variants (control, variant_a, variant_b, variant_c) with file:line locations, followed by an explicit question asking the user which variant to keep. The run should pause for that decision and NOT proceed to edits without it.",
+      "files": [
+        "evals/files/eval-2-multi-variant/src/experiments.js",
+        "evals/files/eval-2-multi-variant/src/homepage.js",
+        "evals/files/eval-2-multi-variant/test/homepage.test.js",
+        "evals/files/eval-2-multi-variant/package.json"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Check if the remote config key `max_upload_size_override` is still used anywhere in `evals/files/eval-3-unused-config/`. If it's dead, remove it. If it's still used, tell me where and don't remove it yet.",
+      "expected_output": "Correctly identifies that `max_upload_size_override` has zero code references (it's defined in the YAML but no function reads it), confirms with the user before deleting, and then removes only the YAML line plus updates the test fixture. Does not touch `max_upload_size_bytes` which is actively used.",
+      "files": [
+        "evals/files/eval-3-unused-config/config/remote-config.yaml",
+        "evals/files/eval-3-unused-config/src/remoteConfig.js",
+        "evals/files/eval-3-unused-config/src/uploader.js",
+        "evals/files/eval-3-unused-config/test/uploader.test.js",
+        "evals/files/eval-3-unused-config/package.json"
+      ]
+    }
+  ]
+}
