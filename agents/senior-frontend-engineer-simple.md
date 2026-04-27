@@ -7,6 +7,7 @@ skills:
   - explain-code
   - general-frontend-development
   - javascript-development
+  - cleanup-abtest-remoteconfig
 ---
 
 # Senior Frontend Engineer
