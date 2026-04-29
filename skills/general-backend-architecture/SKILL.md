@@ -49,6 +49,7 @@ Responsibilities:
 * Pass extracted plain data to the service layer — never pass request/response objects or protocol-specific types into the service layer
 * Catch domain exceptions from the service layer and map them to protocol-specific responses
 * Validate request **shape** (required fields present, correct types, format constraints like email format or string length)
+* Map domain entities returned from the service layer to response DTOs before sending to clients — never return data layer objects (entities, database rows) directly
 
 This layer should not be unit tested since the cost of maintaining those tests outweighs the value, unless explicitly asked.
 
@@ -82,6 +83,26 @@ Client runs `./run-worker process-user-registration`
 
 Cronjob triggers `./run-worker process-reporting-data`
   -> route to ReportingService.processDailyReporting()
+```
+
+### Response DTOs
+
+The protocol layer must map domain entities to dedicated response DTOs before returning them to clients. Never serialize data layer objects (entities, database rows, ORM models) directly.
+
+Why:
+* **Information security**: Domain entities often contain fields that should never leave the server (password hashes, internal flags, soft-delete timestamps, audit columns). Returning the entity directly leaks them.
+* **Decoupling**: The wire format is a public contract. If clients depend on the entity shape, every internal column rename or refactor becomes a breaking API change.
+* **Data projection**: Different endpoints need different shapes — list views need fewer fields than detail views, admin endpoints expose more than public ones. Dedicated DTOs let each endpoint return exactly what it needs, which also opens the door to query-level projection later (selecting fewer columns) without reshaping the response.
+
+Pattern:
+* Define a response DTO per endpoint (or a small set of shared DTOs when shapes truly match).
+* Map entity -> DTO inside the protocol layer (controller method, mapper class, or framework serializer config).
+* Keep the mapping mechanical — no business logic in the mapper.
+
+```
+Service returns User entity (id, email, name, passwordHash, createdAt, deletedAt)
+  -> Controller maps to UserResponse (id, email, name)
+  -> Client receives only the safe, intentional fields
 ```
 
 ---
@@ -176,6 +197,13 @@ When implementing a backend feature, deliver in this bottom-up order:
 5. Test files (mandatory for service layer, optional for others unless requested)
 6. Brief explanation of architecture decisions
 
+## Specific Examples
+When implementing, read the relevant reference file for concrete code examples in the target language/framework:
+
+- `references/implementation-example.md
+
+---
+
 ## MUST NOT DO
 - Put business logic in the protocol layer — controllers are connectors, not decision makers
 - Pass protocol-specific objects (HTTP request, socket, CLI args) into the service layer
@@ -183,4 +211,5 @@ When implementing a backend feature, deliver in this bottom-up order:
 - Skip input validation at system boundaries
 - Catch and silently swallow exceptions — either handle them meaningfully or let them propagate
 - Depend on concrete data layer implementations from the service layer — always use interfaces
+- Return data layer objects (entities, database rows, ORM models) directly from the protocol layer — always map to response DTOs first
 - Hardcode configuration values (database credentials, API keys, feature flags) — externalize to environment variables or config files
